@@ -1,0 +1,22 @@
+package co.com.spark.services;
+
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.springframework.stereotype.Service;
+
+@Service
+public class SparkServices {
+
+	public void listar() {
+		try (RDFConnection conn = RDFConnection.connect("'http://es.dbpedia.org/sparql'")){
+			//conn.load("data.ttl");
+			conn.querySelect("SELECT ?nombre,?comentario", (qs) -> {
+				Resource subject = qs.getResource("nombre");
+				System.out.println("Nombre: "+subject);
+			});
+		}catch(Exception e) {
+			System.out.println("ERROR en la conexión");
+		}
+	}
+	
+}

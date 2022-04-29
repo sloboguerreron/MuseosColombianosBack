@@ -1,0 +1,12 @@
+package co.com.spark.services;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class SparkServices {
+
+	public void listar() {
+		
+	}
+	
+}

@@ -1,0 +1,27 @@
+package co.com.spark.services;
+
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.springframework.stereotype.Service;
+
+@Service
+public class SparkServices {
+
+	public void listar() {
+		try (RDFConnection conn = RDFConnection.connect("http://es.dbpedia.org/sparql")){
+			QueryExecution query = conn.query("select ?museo where {[] a ?museo} LIMIT 100");
+			ResultSet rs = query.execSelect();
+			while(rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				Resource concept = qs.getResource("nombre");
+				System.out.println("Nombre: "+concept);
+			}
+		}catch(Exception e) {
+			System.out.println("ERROR en la conexión");
+		}
+	}
+	
+}

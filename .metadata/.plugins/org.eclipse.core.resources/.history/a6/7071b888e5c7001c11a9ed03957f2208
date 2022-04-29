@@ -1,0 +1,17 @@
+package co.com.spark.services;
+
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.springframework.stereotype.Service;
+
+@Service
+public class SparkServices {
+
+	public void listar() {
+		try (RDFConnection conn = RDFConnection.connect("'http://es.dbpedia.org/sparql'")){
+			
+		}catch(Exception e) {
+			
+		}
+	}
+	
+}
