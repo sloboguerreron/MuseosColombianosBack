@@ -1,5 +1,8 @@
 package co.com.spark.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -9,22 +12,57 @@ import org.apache.jena.rdf.model.impl.LiteralImpl;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.springframework.stereotype.Service;
 
+import co.com.spark.dto.EntradaDTO;
+import co.com.spark.dto.RespuestaDTO;
+
 @Service
 public class SparkServices {
 
-	public void listar() {
+	public List<RespuestaDTO> listar(EntradaDTO input) {
+		List<RespuestaDTO> respuestas = new ArrayList<RespuestaDTO>();
 		try (RDFConnection conn = RDFConnection.connect("http://es.dbpedia.org/sparql")){
-			QueryExecution query = conn.query("prefix foaf: <http://xmlns.com/foaf/0.1/> select ?nombre where {?museo foaf:name ?nombre .} LIMIT 100");
+			
+			QueryExecution query;
+			
+			if(input.getCiudad() == null) {
+				query = conn.query("prefix foaf: <http://xmlns.com/foaf/0.1/>"
+						+ "prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>"
+						+ "prefix dbo: <http://dbpedia.org/ontology/>"
+						+ "select ?nombre ?comentario where {"
+						+ "?museo rdfs:comment ?comentario ."
+						+ "?museo foaf:name ?nombre ."
+						+ "FILTER regex(?nombre, \""+input.getNombreMuseo()+"\", \"i\") ."
+						+ "} LIMIT 100");
+			} else { 
+				query = conn.query("prefix foaf: <http://xmlns.com/foaf/0.1/>"
+						+ "prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>"
+						+ "prefix dbo: <http://dbpedia.org/ontology/>"
+						+ "prefix dbpedia-es: <http://es.dbpedia.org/resource/>"
+						+ "select ?nombre ?comentario where {"
+						+ "?museo rdfs:comment ?comentario ."
+						+ "?museo foaf:name ?nombre ."
+						+ "FILTER regex(?nombre, \""+input.getNombreMuseo()+"\", \"i\") ."
+						+ "?museo dbo:city dbpedia-es:"+input.getCiudad()+" ."
+						+ "} LIMIT 100");
+			}
+			
+			
 			ResultSet rs = query.execSelect();
+			
 			while(rs.hasNext()) {
 				QuerySolution qs = rs.next();
 				//Resource concept = qs.getResource("nombre");
-				RDFNode node = qs.get("nombre");
-				System.out.println("Nombre: "+node);
+				RDFNode nombre = qs.get("nombre");
+				RDFNode comentario = qs.get("comentario");
+				RespuestaDTO respuesta = new RespuestaDTO(nombre.toString(), comentario.toString());
+				respuestas.add(respuesta);
 			}
 		}catch(Exception e) {
+			// Usar Logger
 			System.out.println("ERROR en la conexión");
 		}
+		
+		return respuestas;
 	}
 	
 }
