@@ -24,13 +24,14 @@ public class SparkServices {
 			
 			QueryExecution query;
 			
-			if(input.getCiudad() == null) {
+			if(input.getCiudad().equals("") ) {
 				query = conn.query("prefix foaf: <http://xmlns.com/foaf/0.1/>"
 						+ "prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>"
 						+ "prefix dbo: <http://dbpedia.org/ontology/>"
-						+ "select ?nombre ?comentario where {"
+						+ "select ?nombre ?comentario ?homepage where {"
 						+ "?museo rdfs:comment ?comentario ."
 						+ "?museo foaf:name ?nombre ."
+						+ "?museo foaf:homepage ?homepage ."
 						+ "FILTER regex(?nombre, \""+input.getNombreMuseo()+"\", \"i\") ."
 						+ "} LIMIT 100");
 			} else { 
@@ -38,9 +39,10 @@ public class SparkServices {
 						+ "prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>"
 						+ "prefix dbo: <http://dbpedia.org/ontology/>"
 						+ "prefix dbpedia-es: <http://es.dbpedia.org/resource/>"
-						+ "select ?nombre ?comentario where {"
+						+ "select ?nombre ?comentario ?homepage where {"
 						+ "?museo rdfs:comment ?comentario ."
 						+ "?museo foaf:name ?nombre ."
+						+ "?museo foaf:homepage ?homepage ."
 						+ "FILTER regex(?nombre, \""+input.getNombreMuseo()+"\", \"i\") ."
 						+ "?museo dbo:city dbpedia-es:"+input.getCiudad()+" ."
 						+ "} LIMIT 100");
@@ -54,7 +56,8 @@ public class SparkServices {
 				//Resource concept = qs.getResource("nombre");
 				RDFNode nombre = qs.get("nombre");
 				RDFNode comentario = qs.get("comentario");
-				RespuestaDTO respuesta = new RespuestaDTO(nombre.toString(), comentario.toString());
+				RDFNode homepage = qs.get("homepage");
+				RespuestaDTO respuesta = new RespuestaDTO(nombre.toString(), comentario.toString(), homepage.toString());
 				respuestas.add(respuesta);
 			}
 		}catch(Exception e) {

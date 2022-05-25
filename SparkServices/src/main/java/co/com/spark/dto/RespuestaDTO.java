@@ -4,11 +4,13 @@ public class RespuestaDTO {
 
 	private String nombre;
 	private String descripcion;
+	private String homepage;
 	
-	public RespuestaDTO(String nombre, String descripcion) {
+	public RespuestaDTO(String nombre, String descripcion, String homepage) {
 		super();
 		this.nombre = nombre;
 		this.descripcion = descripcion;
+		this.homepage = homepage;
 	}
 	
 	public String getNombre() {
@@ -26,6 +28,12 @@ public class RespuestaDTO {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-
 	
+	public String getHomepage() {
+		return homepage;
+	}
+
+	public void setHomepage(String homepage) {
+		this.homepage = homepage;
+	}
 }
